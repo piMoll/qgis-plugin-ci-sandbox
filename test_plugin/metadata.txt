@@ -1,0 +1,9 @@
+[general]
+name=TestPlugin
+description=Plugin to test workflows based on qgis-plugin-ci
+about=Plugin to test workflows based on qgis-plugin-ci
+version=1.0
+qgisMinimumVersion=3.0
+author=Germap
+email=german@opengis.ch
+repository=https://github.com/gacarrillor/test_plugin_ci
