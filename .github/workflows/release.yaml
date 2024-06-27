@@ -20,10 +20,10 @@ jobs:
       - name: Release
         run: |
           VERSION=${{ github.ref_name }}
-          qgis-plugin-ci package ${VERSION}
+          qgis-plugin-ci release ${VERSION}
 
-      - name: Upload release assets
-        uses: actions/upload-artifact@v4
-        with:
-          name: test_plugin.${{ github.ref_name }}.zip
-          path: ./test_plugin.${{ github.ref_name }}.zip
+#      - name: Upload release assets
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: test_plugin.${{ github.ref_name }}
+#          path: ./test_plugin.${{ github.ref_name }}.zip
