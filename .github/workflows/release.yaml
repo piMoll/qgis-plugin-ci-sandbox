@@ -1,0 +1,28 @@
+on:
+  release:
+    types: published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install qgis-plugin-ci
+        run: pip3 install qgis-plugin-ci
+
+      - name: Release
+        run: |
+          qgis-plugin-ci package ${{ github.event.inputs.ref }}
+
+      - name: Upload release assets
+        uses: actions/upload-artifact@v2
+        with:
+          name: test_plugin.${{ github.event.inputs.ref }}.zip
+          path: ./test_plugin.${{ github.event.inputs.ref }}.zip
