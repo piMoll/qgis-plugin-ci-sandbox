@@ -20,7 +20,8 @@ jobs:
       - name: Release
         run: |
           VERSION=${{ github.ref_name }}
-          qgis-plugin-ci release ${VERSION}
+          qgis-plugin-ci release ${VERSION} \
+          --github-token ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Upload release assets
 #        uses: actions/upload-artifact@v4
