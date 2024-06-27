@@ -2,7 +2,7 @@
 name=TestPlugin
 description=Plugin to test workflows based on qgis-plugin-ci
 about=Plugin to test workflows based on qgis-plugin-ci
-version=0.0.4
+version=dev
 qgisMinimumVersion=3.0
 author=Germap
 email=german@opengis.ch

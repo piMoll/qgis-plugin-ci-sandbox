@@ -25,5 +25,5 @@ jobs:
       - name: Upload release assets
         uses: actions/upload-artifact@v4
         with:
-          name: test_plugin.${VERSION}.zip
-          path: ./test_plugin.${VERSION}.zip
+          name: test_plugin.${{ github.ref_name }}.zip
+          path: ./test_plugin.${{ github.ref_name }}.zip
