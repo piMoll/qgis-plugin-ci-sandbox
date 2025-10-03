@@ -1,4 +1,4 @@
 plugin_path: test_plugin
-github_organization_slug: gacarrillor
+github_organization_slug: piMoll
 project_slug: test_plugin_ci
 changelog_include: False
