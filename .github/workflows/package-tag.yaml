@@ -4,12 +4,11 @@ on:
   push:
     tags:
       - '*'
-    branches:
-      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v5
@@ -28,7 +27,7 @@ jobs:
         run: pip install qgis-plugin-ci>=2.8.6
 
       - name: Package
-        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+#        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         run: |
           VERSION=${{ github.ref_name }}
           qgis-plugin-ci package ${VERSION}
