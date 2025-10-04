@@ -22,18 +22,22 @@ jobs:
       - name: Install Qt6 lrelease
         run: |
           sudo apt-get update
-          sudo apt-get install qtbase6-dev qttools6-dev-tools
+          sudo apt-get install qtbase5-dev qttools5-dev-tools
 
       - name: Install qgis-plugin-ci
         run: pip install qgis-plugin-ci>=2.8.6
       
-      - name: Package
+      - name: Create package for intermediate commits (no tag)
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         run: |
           VERSION=0.0.0
           qgis-plugin-ci package ${VERSION}
+
+      - name: Fix resources_rc.py Qt import for Qt6 compatibility
+        if: ${{ hashFiles('test_plugin/resources_rc.py') != '' }}
+        run: sed -i 's/from PyQt5 import QtCore/from qgis.PyQt import QtCore/' test_plugin/resources_rc.py
       
-      - name: Upload intermediate plugin package
+      - name: Upload package for intermediate commits (no tag)
         uses: actions/upload-artifact@v4
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
