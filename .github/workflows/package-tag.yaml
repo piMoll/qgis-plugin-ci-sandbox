@@ -10,6 +10,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      plugin_name: test_plugin
+      zip_name: ${{ plugin_name }}.0.0.0
 
     steps:
       - uses: actions/checkout@v5
@@ -35,14 +38,19 @@ jobs:
 
       - name: Fix resources_rc.py Qt import for Qt6 compatibility
         if: ${{ hashFiles('test_plugin/resources_rc.py') != '' }}
-        run: sed -i 's/from PyQt5 import QtCore/from qgis.PyQt import QtCore/' test_plugin/resources_rc.py
+        run: >
+          unzip ${{zip_name}}.zip -d extracted &&
+          sed -i 's/from PyQt5 import QtCore/from qgis.PyQt import QtCore/' extracted/${{ plugin_name }}/resources_rc.py &&
+          rm ${{zip_name}}.zip &&
+          (cd extracted && zip -r ../${{zip_name}}.zip .) &&
+          rm -r extracted
       
       - name: Upload package for intermediate commits (no tag)
         uses: actions/upload-artifact@v4
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
-          name: test_plugin.0.0.0
-          path: ./test_plugin.0.0.0.zip
+          name: ${{zip_name}}
+          path: ./${{zip_name}}.zip
           if-no-files-found: error
 #      
 #      - name: Release
