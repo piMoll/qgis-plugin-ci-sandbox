@@ -33,6 +33,16 @@ jobs:
           VERSION=0.0.0
           qgis-plugin-ci package ${VERSION}
       
+      - name: Fix Qt import in resources_rc.py for Qt6 compatibility
+        if: ${{ hashFiles('test_plugin/resources_rc.py') != '' }}
+        run: >
+          ZIP_NAME=test_plugin.0.0.0.zip &&
+          unzip ${ZIP_NAME} -d extracted &&
+          sed -i 's/from PyQt5 import QtCore/from qgis.PyQt import QtCore/' extracted/test_plugin/resources_rc.py &&
+          rm ${ZIP_NAME} &&
+          (cd extracted && zip -r ../${ZIP_NAME} .) &&
+          rm -r extracted
+      
       - name: Upload package for intermediate commits (no tag)
         uses: actions/upload-artifact@v4
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
