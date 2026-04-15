@@ -12,8 +12,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - test_plugin/**
   release:
     types: [published]
   workflow_dispatch:
