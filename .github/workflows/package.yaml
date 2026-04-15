@@ -1,10 +1,14 @@
 name: 🔌 Plugin | Package and release
 
-# TODO: read up on this
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# This workflow is triggered on 
+  # 1) pushes to the main branch
+  # 2) pull requests with target main 
+  # 3) GitHub releases
+  
 on:
   push:
     branches:
@@ -29,8 +33,7 @@ jobs:
         with:
           python-version: '3.12'
       
-#      # Install dependencies for translations. Only necessary if transifex is used.
-#      - name: Install Qt lrelease
+#      - name: Install Qt lrelease dependencies (necessary for translations)
 #        run: |
 #          sudo apt-get update
 #          sudo apt-get install qtbase5-dev qttools5-dev-tools
@@ -38,13 +41,11 @@ jobs:
       - name: Install qgis-plugin-ci
         run: pip install qgis-plugin-ci>=2.8.6
       
-#      # This allows updating new translations to the online translation platform transifex
-#      - name: 🌍 Push translations
+#      - name: Update translations to the online translation platform transifex
 #        if: ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
 #        run: qgis-plugin-ci push-translation ${{ secrets.TX_TOKEN }}
 
-      # Package the plugin as a dev version for preview
-      - name: Package dev version
+      - name: Package the plugin as a dev version for preview
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         run: |
           VERSION=0.0.0
@@ -52,7 +53,7 @@ jobs:
             --allow-uncommitted-changes \
 #            --transifex-token "${{ secrets.TX_TOKEN }}"
       
-      - name: Upload dev version artifact
+      - name: Upload the dev version artifact
         id: upload-artifact
         uses: actions/upload-artifact@v7
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
@@ -71,25 +72,11 @@ jobs:
 
             A development build of the plugin is available for testing:
 
-            **[⬇️ Download nw_ow_locator_dev.zip](${{ steps.upload-artifact.outputs.artifact-url }})**
+            **[⬇️ Download test_plugin_dev.zip](${{ steps.upload-artifact.outputs.artifact-url }})**
 
             > ⚠️ This is a development build from commit ${{ github.event.pull_request.head.sha }}.
 
-#      # Release the plugin to the QGIS plugin repository.
-#      # This step is triggered when a release is created in GitHub.
-#      # Remember to set the `--github-token` and `--qgis_token` as environment variables in GitHub
-#      - name: Release
-#        if: startsWith(github.ref, 'refs/tags/')
-#        run: |
-#          VERSION=${{ github.ref_name }}
-#          qgis-plugin-ci release ${VERSION} \
-#            --allow-uncommitted-changes \
-#            --github-token ${{ secrets.GITHUB_TOKEN }} \
-#            --qgis-token ${{ secrets.QGIS_ORG_TOKEN }} \
-##            --transifex-token "${{ secrets.TX_TOKEN }}"
-
-      # Package the plugin to add it to the GitHub release
-      - name: Package release version
+      - name: Release - Package release version
         if: ${{ github.event_name == 'release' }}
         run: |
           VERSION=${{ github.event.release.tag_name }}
@@ -97,9 +84,23 @@ jobs:
             --allow-uncommitted-changes \
 #            --transifex-token "${{ secrets.TX_TOKEN }}"
 
-      # Add the plugin package to the release page for easy download
-      - name: Upload release asset
+      - name: Release - Upload package to the GitHub release page
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
           files: test_plugin.${{ github.event.release.tag_name }}.zip
+
+
+#
+#      # Release the plugin to the QGIS plugin repository.
+#      # This step is triggered when a release is created in GitHub.
+#      # Remember to set the `--github-token` and `--qgis_token` as environment variables in GitHub
+#      - name: Release the plugin to the QGIS plugin repository
+#        if: ${{ github.event_name == 'release' }}
+#        run: |
+#          VERSION=${{ github.event.release.tag_name }}
+#          qgis-plugin-ci release ${VERSION} \
+#            --allow-uncommitted-changes \
+#            --github-token ${{ secrets.GITHUB_TOKEN }} \
+#            --qgis-token ${{ secrets.QGIS_ORG_TOKEN }} \
+##            --transifex-token "${{ secrets.TX_TOKEN }}"
